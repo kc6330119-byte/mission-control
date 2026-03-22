@@ -1,0 +1,4 @@
+node_modules/
+dist/
+server/db/mission-control.db
+.env
