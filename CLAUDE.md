@@ -32,7 +32,9 @@ mission-control/
 │   │   │   ├── Calendar/      # Timeline and scheduling view
 │   │   │   ├── Docs/          # Document management
 │   │   │   ├── CostTracker/   # Claude usage & billing monitor
-│   │   │   └── SAP/           # SAP work activity section
+│   │   │   ├── SAP/           # SAP work activity section
+│   │   │   ├── Team/          # Team / Org view & agent cards
+│   │   │   └── Mission/       # Mission statement & reverse prompting
 │   │   ├── hooks/             # Custom React hooks
 │   │   ├── context/           # React context providers
 │   │   ├── utils/             # Helper functions
@@ -44,7 +46,9 @@ mission-control/
 │   │   ├── projects.js        # Directory site data
 │   │   ├── analytics.js       # Proxy for analytics data
 │   │   ├── investments.js     # Alpha Vantage integration
-│   │   └── usage.js           # Claude usage tracking
+│   │   ├── usage.js           # Claude usage tracking
+│   │   ├── team.js            # Team member CRUD & activity
+│   │   └── mission.js         # Mission statement & recommendations
 │   ├── db/
 │   │   ├── schema.sql         # SQLite schema
 │   │   └── seed.sql           # Initial data
@@ -71,6 +75,13 @@ Interactive task management with drag-and-drop columns:
 - **Filter by:** project, priority, assignee
 - **Color-coded** project tags: Holistic Vet (green), Splash Pad (blue), Senior Home Care (purple), Smart Investor (orange), SAP (red), Mission Control (gray)
 
+### 1.2.1 Live Activity Sidebar
+A real-time activity feed displayed as a sidebar on the Task Board (inspired by Alex Finn's OpenClaw Mission Control):
+- Shows what each agent (Kevin, Zoe, Claude Code) is currently doing or last did
+- Timestamped entries: "Zoe checked Google Analytics — 4 active users" or "Claude Code committed 3 files to Smart Investor repo"
+- Auto-scrolling log, newest at top
+- Filterable by agent
+
 ### 1.3 Projects View
 Detailed view for each directory site:
 - **Project Card (expanded):** full status, tech stack, URL, Netlify deploy status, Airtable record count, blog post count, remediation checklist with progress bar
@@ -79,10 +90,23 @@ Detailed view for each directory site:
 - **Next Actions:** Auto-populated from the kanban board filtered to that project
 
 ### 1.4 Navigation
-- Sidebar navigation with icons: Dashboard, Task Board, Projects, Analytics, Investments, Calendar, Docs, Cost Tracker, SAP
+- Sidebar navigation with icons: Dashboard, Task Board, Projects, Analytics, Investments, Calendar, Docs, Cost Tracker, SAP, Team
 - Collapsible sidebar for more screen space
 - Dark mode toggle
 - Mobile-responsive layout
+
+### 1.5 Mission Statement
+A persistent, editable "North Star" displayed at the top of the Dashboard and Team views:
+- Default: "Build four revenue-generating directory sites to AdSense approval, leveraging AI agents to maximize productivity and quality."
+- Editable by Kevin through the UI
+- Used as context for task prioritization — a "What should we do next?" button that recommends the highest-impact task based on the mission statement and current project status
+
+### 1.6 Reverse Prompting
+A built-in "Ask Mission Control" feature:
+- A text input or button that asks: "What task should we focus on next to move closest to our goals?"
+- Analyzes current project statuses, upcoming deadlines (AdSense submission dates), blockers, and the mission statement
+- Returns a prioritized recommendation with reasoning
+- Can also answer: "What's blocking progress right now?" and "What's the highest-risk item?"
 
 ## Phase 2 — Analytics Integration
 
@@ -159,6 +183,30 @@ A calculated score (0-100) per site based on:
 - Publication schedule
 - Content performance metrics
 
+## Phase 5 — Team & Agent Management
+
+### 5.1 Team / Org View
+A visual team screen showing all agents and their roles:
+- **Kevin Collins** — Human Lead, Decision Maker. Devices: Mac Mini (home), MacBook Pro (mobile). Role: Strategy, approvals, content review, SAP work
+- **Zoe** — Dispatch/Cowork AI Agent on Mac Mini. Role: Project lead for directory sites, daily briefings, analytics monitoring, investment alerts, email drafting, scheduling, research
+- **Claude Code** — Coding AI Agent on Mac Mini. Role: Code development, site builds, bug fixes, blog post writing, data pipeline scripts
+- Each agent card shows: name, avatar/icon, role description, current status (online/offline/busy), last active, tasks assigned, tasks completed
+- Future: ability to add more agents (e.g., a dedicated research agent, image generation agent, newsletter agent)
+
+### 5.2 Agent Activity Dashboard
+Per-agent detail view showing:
+- Tasks completed (daily/weekly/monthly)
+- Current assignments
+- Performance metrics (tasks completed on time, average task duration)
+- Activity log filtered to that agent
+
+### 5.3 The Office (Fun/Optional)
+A fun 2D pixel-art or isometric visualization showing agents "at their desks":
+- Kevin at a command desk, Zoe at a monitoring station, Claude Code at a coding terminal
+- Agents show activity animations when actively working on tasks
+- Purely cosmetic but adds personality to the dashboard
+- Low priority — build only after core features are solid
+
 ## Design Requirements
 
 ### Visual Style
@@ -206,6 +254,12 @@ A calculated score (0-100) per site based on:
 ### activity_log
 - id, type, message, project_id, created_at
 
+### team_members
+- id, name, type (human/ai_agent), role, description, device, status (online/offline/busy), avatar_url, created_at, updated_at
+
+### agent_activity
+- id, agent_id, action, details, project_id, task_id, created_at
+
 ## API Endpoints
 
 ### Tasks
@@ -232,6 +286,16 @@ A calculated score (0-100) per site based on:
 - GET /api/usage/current — Current usage stats
 - GET /api/usage/history — Usage trend data
 
+### Team
+- GET /api/team — List all team members with current status
+- GET /api/team/:id/activity — Activity log for a specific agent
+- PUT /api/team/:id — Update team member status/details
+
+### Mission
+- GET /api/mission — Get current mission statement
+- PUT /api/mission — Update mission statement
+- GET /api/mission/recommend — Get AI-recommended next task based on mission and current state
+
 ## Initial Data (Seed)
 
 ### Projects to seed:
@@ -239,6 +303,11 @@ A calculated score (0-100) per site based on:
 2. **Splash Pad Locator** — splashpadlocator.com, status: "Waiting for Google Recrawl", adsense: "First submission — Target late April", listings: 3025, blogs: 29, color: blue
 3. **Senior Home Care Finder** — seniorhomecarefinder.com, status: "Waiting for Google Recrawl", adsense: "First submission — Target late April/early May", listings: 5690, blogs: 25, color: purple
 4. **Smart Investor Financial Tools** — smart-investor-financial-tools.com, status: "Phase 2 — Data Load Pending", adsense: "Resubmission — Target May 5", listings: 5 (sample), blogs: 10, color: orange
+
+### Team members to seed:
+1. **Kevin Collins** — type: human, role: "Human Lead & Decision Maker", device: "Mac Mini (home) + MacBook Pro (mobile)", status: online
+2. **Zoe** — type: ai_agent, role: "Project Lead — Dispatch/Cowork Agent", device: "Mac Mini", status: online
+3. **Claude Code** — type: ai_agent, role: "Development Agent — Code & Content", device: "Mac Mini", status: online
 
 ### Sample tasks to seed:
 - "Load Outscraper data for all 50 states" — Smart Investor, High priority, To Do, assignee: Kevin
