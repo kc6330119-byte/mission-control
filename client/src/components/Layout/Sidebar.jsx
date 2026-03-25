@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { NavLink } from 'react-router-dom'
 import {
-  LayoutDashboard, KanbanSquare, FolderOpen, BarChart3,
+  LayoutDashboard, KanbanSquare, FolderOpen, BarChart3, Brain,
   TrendingUp, Calendar, FileText, DollarSign, Briefcase,
   Users, Target, ChevronLeft, ChevronRight, Moon, Sun, Rocket
 } from 'lucide-react'
@@ -10,17 +10,18 @@ const navItems = [
   { to: '/', icon: LayoutDashboard, label: 'Dashboard' },
   { to: '/tasks', icon: KanbanSquare, label: 'Task Board' },
   { to: '/projects', icon: FolderOpen, label: 'Projects' },
+  { to: '/analytics', icon: BarChart3, label: 'Analytics' },
+  { to: '/memories', icon: Brain, label: 'Memories' },
+  { to: '/costs', icon: DollarSign, label: 'Cost Tracker' },
   { to: '/mission', icon: Target, label: 'Mission' },
   { to: '/team', icon: Users, label: 'Team' },
 ]
 
-// Phase 2+ items shown as disabled
+// Future items shown as disabled
 const futureItems = [
-  { icon: BarChart3, label: 'Analytics' },
   { icon: TrendingUp, label: 'Investments' },
   { icon: Calendar, label: 'Calendar' },
   { icon: FileText, label: 'Docs' },
-  { icon: DollarSign, label: 'Cost Tracker' },
   { icon: Briefcase, label: 'SAP' },
 ]
 

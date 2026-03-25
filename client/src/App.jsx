@@ -7,6 +7,9 @@ import Projects from './components/Projects/Projects'
 import ProjectDetail from './components/Projects/ProjectDetail'
 import Mission from './components/Mission/Mission'
 import Team from './components/Team/Team'
+import Analytics from './components/Analytics/Analytics'
+import Memories from './components/Memories/Memories'
+import CostTracker from './components/CostTracker/CostTracker'
 
 export default function App() {
   const [darkMode, setDarkMode] = useState(true)
@@ -25,6 +28,9 @@ export default function App() {
             <Route path="/tasks" element={<TaskBoard />} />
             <Route path="/projects" element={<Projects />} />
             <Route path="/projects/:id" element={<ProjectDetail />} />
+            <Route path="/analytics" element={<Analytics />} />
+            <Route path="/memories" element={<Memories />} />
+            <Route path="/costs" element={<CostTracker />} />
             <Route path="/mission" element={<Mission />} />
             <Route path="/team" element={<Team />} />
           </Routes>

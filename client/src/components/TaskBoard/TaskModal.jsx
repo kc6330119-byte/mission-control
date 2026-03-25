@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { X, Trash2 } from 'lucide-react'
 
-export default function TaskModal({ task, projects, onSave, onDelete, onClose }) {
+export default function TaskModal({ task, projects, team, onSave, onDelete, onClose }) {
   const [form, setForm] = useState({
     title: task?.title || '',
     description: task?.description || '',
@@ -80,9 +80,7 @@ export default function TaskModal({ task, projects, onSave, onDelete, onClose })
               <label className="block text-sm text-gray-400 mb-1">Assignee</label>
               <select value={form.assignee} onChange={e => setForm(f => ({ ...f, assignee: e.target.value }))} className="w-full bg-dark-700 border border-dark-600 rounded-lg px-3 py-2 text-sm text-gray-200">
                 <option value="">Unassigned</option>
-                <option value="Kevin">Kevin</option>
-                <option value="Zoe">Zoe</option>
-                <option value="Claude Code">Claude Code</option>
+                {(team || []).map(m => <option key={m.id} value={m.name}>{m.name}</option>)}
               </select>
             </div>
           </div>

@@ -26,6 +26,19 @@ router.get('/:id/activity', (req, res) => {
   res.json(activity)
 })
 
+// Add new team member
+router.post('/', (req, res) => {
+  const { name, type, role, description, device, status, avatar_url } = req.body
+  if (!name) return res.status(400).json({ error: 'Name is required' })
+
+  const result = db.prepare(
+    'INSERT INTO team_members (name, type, role, description, device, status, avatar_url) VALUES (?, ?, ?, ?, ?, ?, ?)'
+  ).run(name, type ?? 'human', role ?? null, description ?? null, device ?? null, status ?? 'offline', avatar_url ?? null)
+
+  const created = db.prepare('SELECT * FROM team_members WHERE id = ?').get(result.lastInsertRowid)
+  res.status(201).json(created)
+})
+
 // Update team member
 router.put('/:id', (req, res) => {
   const existing = db.prepare('SELECT * FROM team_members WHERE id = ?').get(req.params.id)

@@ -79,11 +79,16 @@ CREATE TABLE IF NOT EXISTS investment_snapshots (
 
 CREATE TABLE IF NOT EXISTS usage_snapshots (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
-  date TEXT,
-  session_pct REAL DEFAULT 0,
-  weekly_pct REAL DEFAULT 0,
+  date TEXT NOT NULL,
+  session_pct INTEGER DEFAULT 0,
+  weekly_pct INTEGER DEFAULT 0,
+  sonnet_pct INTEGER DEFAULT 0,
   extra_spend REAL DEFAULT 0,
-  plan TEXT
+  extra_limit REAL DEFAULT 100,
+  extra_balance REAL DEFAULT 0,
+  plan TEXT DEFAULT 'Max 5x',
+  notes TEXT,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE IF NOT EXISTS activity_log (
@@ -120,6 +125,20 @@ CREATE TABLE IF NOT EXISTS agent_activity (
   FOREIGN KEY (agent_id) REFERENCES team_members(id),
   FOREIGN KEY (project_id) REFERENCES projects(id),
   FOREIGN KEY (task_id) REFERENCES tasks(id)
+);
+
+CREATE TABLE IF NOT EXISTS memories (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  name TEXT NOT NULL,
+  description TEXT,
+  type TEXT DEFAULT 'project' CHECK(type IN ('user','project','feedback','reference')),
+  content TEXT,
+  file_path TEXT,
+  source TEXT,
+  sync_status TEXT DEFAULT 'synced' CHECK(sync_status IN ('synced','pending_write','conflict')),
+  last_synced_at DATETIME,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE IF NOT EXISTS mission (

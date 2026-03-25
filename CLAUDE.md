@@ -28,6 +28,7 @@ mission-control/
 │   │   │   ├── TaskBoard/     # Kanban board with drag-and-drop
 │   │   │   ├── Projects/      # Directory site project cards
 │   │   │   ├── Analytics/     # GA4 & Search Console widgets
+│   │   │   ├── Memories/      # Memory browser, detail, and timeline
 │   │   │   ├── Investments/   # Stock watchlist & news feed
 │   │   │   ├── Calendar/      # Timeline and scheduling view
 │   │   │   ├── Docs/          # Document management
@@ -45,6 +46,7 @@ mission-control/
 │   │   ├── tasks.js           # CRUD for kanban tasks
 │   │   ├── projects.js        # Directory site data
 │   │   ├── analytics.js       # Proxy for analytics data
+│   │   ├── memories.js        # Memory CRUD & file sync
 │   │   ├── investments.js     # Alpha Vantage integration
 │   │   ├── usage.js           # Claude usage tracking
 │   │   ├── team.js            # Team member CRUD & activity
@@ -90,7 +92,7 @@ Detailed view for each directory site:
 - **Next Actions:** Auto-populated from the kanban board filtered to that project
 
 ### 1.4 Navigation
-- Sidebar navigation with icons: Dashboard, Task Board, Projects, Analytics, Investments, Calendar, Docs, Cost Tracker, SAP, Team
+- Sidebar navigation with icons: Dashboard, Task Board, Projects, Analytics, Memories, Investments, Calendar, Docs, Cost Tracker, SAP, Team
 - Collapsible sidebar for more screen space
 - Dark mode toggle
 - Mobile-responsive layout
@@ -138,6 +140,37 @@ A calculated score (0-100) per site based on:
 - Session duration (target: above 3 min)
 - Blog post count (target: 25+)
 - Display recommendation: "Ready", "Getting Close", "Not Yet" with reasoning
+
+### 2.4 Memories Module
+A searchable knowledge base that syncs with Zoe's persistent memory files, inspired by Alex Finn's OpenClaw Mission Control (7:03 mark).
+
+**Memory Browser:**
+- Card-based display of all saved memories
+- Filter by type: user, project, feedback, reference
+- Full-text search across memory names, descriptions, and content
+- Sort by: date created, date updated, type, name
+
+**Memory Detail View:**
+- Full content display with markdown rendering
+- Edit memory content, name, description, and type through the UI
+- Delete with confirmation
+- Timestamps: created_at and updated_at displayed
+
+**Timeline View:**
+- Chronological view of when memories were created and updated
+- Shows how the working relationship has evolved over time
+- Filterable by type
+
+**"What does Zoe know?" Query:**
+- Search input that queries across all memory content
+- Returns relevant memories ranked by relevance
+- Useful for quickly checking if something has been remembered
+
+**Sync with Memory Files:**
+- On startup, import all markdown memory files from the Cowork auto-memory directory
+- Parse YAML frontmatter (name, description, type) and markdown body content
+- Detect new, modified, or deleted memory files and sync accordingly
+- Export: changes made through the UI can be written back to markdown files
 
 ## Phase 3 — Financial & Operations
 
@@ -251,6 +284,9 @@ A fun 2D pixel-art or isometric visualization showing agents "at their desks":
 ### usage_snapshots
 - id, date, session_pct, weekly_pct, extra_spend, plan
 
+### memories
+- id, name, description, type (user/project/feedback/reference), content, file_path, created_at, updated_at
+
 ### activity_log
 - id, type, message, project_id, created_at
 
@@ -290,6 +326,14 @@ A fun 2D pixel-art or isometric visualization showing agents "at their desks":
 - GET /api/team — List all team members with current status
 - GET /api/team/:id/activity — Activity log for a specific agent
 - PUT /api/team/:id — Update team member status/details
+
+### Memories
+- GET /api/memories — List all memories (with search and type filter)
+- GET /api/memories/:id — Single memory detail
+- POST /api/memories — Create new memory
+- PUT /api/memories/:id — Update memory
+- DELETE /api/memories/:id — Delete memory
+- POST /api/memories/sync — Trigger sync from memory files
 
 ### Mission
 - GET /api/mission — Get current mission statement

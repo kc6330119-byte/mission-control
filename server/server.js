@@ -8,6 +8,9 @@ import projectsRouter from './routes/projects.js'
 import teamRouter from './routes/team.js'
 import missionRouter from './routes/mission.js'
 import activityRouter from './routes/activity.js'
+import memoriesRouter from './routes/memories.js'
+import analyticsRouter from './routes/analytics.js'
+import usageRouter from './routes/usage.js'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const app = express()
@@ -25,6 +28,9 @@ app.use('/api/projects', projectsRouter)
 app.use('/api/team', teamRouter)
 app.use('/api/mission', missionRouter)
 app.use('/api/activity', activityRouter)
+app.use('/api/memories', memoriesRouter)
+app.use('/api/analytics', analyticsRouter)
+app.use('/api/usage', usageRouter)
 
 // Serve static frontend in production
 if (process.env.NODE_ENV === 'production') {

@@ -35,4 +35,22 @@ export const api = {
   // Activity
   getActivity: (params) => request(`/activity${params ? '?' + new URLSearchParams(params) : ''}`),
   logActivity: (data) => request('/activity', { method: 'POST', body: JSON.stringify(data) }),
+
+  // Memories
+  getMemories: (params) => request(`/memories${params ? '?' + new URLSearchParams(params) : ''}`),
+  getMemory: (id) => request(`/memories/${id}`),
+  createMemory: (data) => request('/memories', { method: 'POST', body: JSON.stringify(data) }),
+  updateMemory: (id, data) => request(`/memories/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+  deleteMemory: (id) => request(`/memories/${id}`, { method: 'DELETE' }),
+  syncMemories: () => request('/memories/sync', { method: 'POST' }),
+  getMemorySources: () => request('/memories/sources'),
+
+  // Analytics
+  getAnalytics: (projectId) => request(`/analytics/${projectId}`),
+  getAdSenseReadiness: () => request('/analytics/readiness/all'),
+
+  // Usage
+  getUsageCurrent: () => request('/usage/current'),
+  getUsageHistory: (days) => request(`/usage/history${days ? '?days=' + days : ''}`),
+  logUsage: (data) => request('/usage', { method: 'POST', body: JSON.stringify(data) }),
 }

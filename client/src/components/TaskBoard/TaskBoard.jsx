@@ -28,6 +28,7 @@ const columnColors = {
 export default function TaskBoard() {
   const [tasks, setTasks] = useState([])
   const [projects, setProjects] = useState([])
+  const [team, setTeam] = useState([])
   const [modalOpen, setModalOpen] = useState(false)
   const [editingTask, setEditingTask] = useState(null)
   const [filters, setFilters] = useState({ project_id: '', assignee: '', priority: '' })
@@ -43,6 +44,7 @@ export default function TaskBoard() {
 
   useEffect(() => { loadTasks() }, [loadTasks])
   useEffect(() => { api.getProjects().then(setProjects) }, [])
+  useEffect(() => { api.getTeam().then(setTeam) }, [])
 
   const tasksByColumn = {}
   COLUMNS.forEach(col => {
@@ -108,7 +110,7 @@ export default function TaskBoard() {
     loadTasks()
   }
 
-  const assignees = [...new Set(tasks.map(t => t.assignee).filter(Boolean))]
+  const assignees = team.length > 0 ? team.map(m => m.name) : [...new Set(tasks.map(t => t.assignee).filter(Boolean))]
 
   return (
     <div className="flex gap-4 h-[calc(100vh-5rem)]">
@@ -250,6 +252,7 @@ export default function TaskBoard() {
         <TaskModal
           task={editingTask}
           projects={projects}
+          team={team}
           onSave={handleSave}
           onDelete={editingTask ? () => handleDelete(editingTask.id) : null}
           onClose={() => setModalOpen(false)}

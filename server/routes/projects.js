@@ -20,6 +20,19 @@ router.get('/:id', (req, res) => {
   res.json({ ...project, adsense_history: adsenseHistory, tasks })
 })
 
+// Create new project
+router.post('/', (req, res) => {
+  const { name, url, status, tech_stack, netlify_url, airtable_base, adsense_status, listing_count, blog_post_count, color_tag } = req.body
+  if (!name) return res.status(400).json({ error: 'Name is required' })
+
+  const result = db.prepare(
+    'INSERT INTO projects (name, url, status, tech_stack, netlify_url, airtable_base, adsense_status, listing_count, blog_post_count, color_tag) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
+  ).run(name, url ?? null, status ?? 'active', tech_stack ?? null, netlify_url ?? null, airtable_base ?? null, adsense_status ?? null, listing_count ?? 0, blog_post_count ?? 0, color_tag ?? 'gray')
+
+  const created = db.prepare('SELECT * FROM projects WHERE id = ?').get(result.lastInsertRowid)
+  res.status(201).json(created)
+})
+
 // Update project
 router.put('/:id', (req, res) => {
   const existing = db.prepare('SELECT * FROM projects WHERE id = ?').get(req.params.id)
